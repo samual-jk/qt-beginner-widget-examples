@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.VC.db
+*.VC.opendb
+
+# Build folders
+build/
+Debug/
+Release/
+x64/
+
+# Qt build files
+*.pro.user
+*.autosave
+moc_*
+ui_*
+qrc_*
+
+# OS files
+.DS_Store
+Thumbs.db

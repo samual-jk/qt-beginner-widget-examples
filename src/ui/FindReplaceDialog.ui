@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FindReplaceDialog</class>
+ <widget class="QDialog" name="FindReplaceDialog">
+  <property name="windowTitle">
+   <string>Find and Replace</string>
+  </property>
+
+  <layout class="QGridLayout">
+
+   <item row="0" column="0">
+    <widget class="QLabel">
+     <property name="text">
+      <string>Find:</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="0" column="1" colspan="2">
+    <widget class="QLineEdit" name="findEdit"/>
+   </item>
+
+   <item row="1" column="0">
+    <widget class="QLabel">
+     <property name="text">
+      <string>Replace:</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="1" column="1" colspan="2">
+    <widget class="QLineEdit" name="replaceEdit"/>
+   </item>
+
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="caseCheck">
+     <property name="text">
+      <string>Case Sensitive</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="wholeWordCheck">
+     <property name="text">
+      <string>Whole Word</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="3" column="0">
+    <widget class="QPushButton" name="findNextBtn">
+     <property name="text">
+      <string>Find Next</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="3" column="1">
+    <widget class="QPushButton" name="findPrevBtn">
+     <property name="text">
+      <string>Find Previous</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="4" column="0">
+    <widget class="QPushButton" name="replaceBtn">
+     <property name="text">
+      <string>Replace</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="4" column="1">
+    <widget class="QPushButton" name="replaceAllBtn">
+     <property name="text">
+      <string>Replace All</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="5" column="0" colspan="2">
+    <widget class="QPushButton" name="findAllBtn">
+     <property name="text">
+      <string>Find All</string>
+     </property>
+    </widget>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
