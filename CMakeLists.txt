@@ -30,9 +30,17 @@ qt_add_executable(NotepadPro
     src/ui/FindReplaceDialog.ui
     src/ui/FindReplaceDialog.h
     src/ui/FindReplaceDialog.cpp
+    src/ui/SignupDialog.ui
+    src/ui/SignupDialog.h
+    src/ui/SignupDialog.cpp
+    src/ui/LoginDialog.ui
+    src/ui/LoginDialog.h
+    src/ui/LoginDialog.cpp
 
     src/core/Document.h
     src/core/Document.cpp
+    src/core/UserManager.h
+    src/core/UserManager.cpp
     src/core/FileManager.h
     src/core/FileManager.cpp
     src/core/SettingsManager.h

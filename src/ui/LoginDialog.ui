@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+
+	<class>LoginDialog</class>
+
+	<widget class="QDialog" name="LoginDialog">
+
+		<property name="windowTitle">
+			<string>Login</string>
+		</property>
+
+		<layout class="QVBoxLayout">
+
+			<item>
+				<widget class="QLineEdit" name="usernameEdit">
+					<property name="placeholderText">
+						<string>Username</string>
+					</property>
+				</widget>
+			</item>
+
+			<item>
+				<widget class="QLineEdit" name="passwordEdit">
+					<property name="echoMode">
+						<enum>QLineEdit::Password</enum>
+					</property>
+					<property name="placeholderText">
+						<string>Password</string>
+					</property>
+				</widget>
+			</item>
+
+			<item>
+				<layout class="QHBoxLayout">
+
+					<item>
+						<widget class="QPushButton" name="loginBtn">
+							<property name="text">
+								<string>Login</string>
+							</property>
+						</widget>
+					</item>
+
+					<item>
+						<widget class="QPushButton" name="signupBtn">
+							<property name="text">
+								<string>Signup</string>
+							</property>
+						</widget>
+					</item>
+
+				</layout>
+			</item>
+
+		</layout>
+
+	</widget>
+
+</ui>

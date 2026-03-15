@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+
+	<class>SignupDialog</class>
+
+	<widget class="QDialog" name="SignupDialog">
+
+		<property name="windowTitle">
+			<string>Create Account</string>
+		</property>
+
+		<layout class="QVBoxLayout">
+
+			<item>
+				<widget class="QLabel">
+					<property name="text">
+						<string>Create a new user</string>
+					</property>
+				</widget>
+			</item>
+
+			<item>
+				<widget class="QLineEdit" name="usernameEdit">
+					<property name="placeholderText">
+						<string>Username</string>
+					</property>
+				</widget>
+			</item>
+
+			<item>
+				<widget class="QLineEdit" name="passwordEdit">
+					<property name="echoMode">
+						<enum>QLineEdit::Password</enum>
+					</property>
+					<property name="placeholderText">
+						<string>Password</string>
+					</property>
+				</widget>
+			</item>
+
+			<item>
+				<widget class="QLineEdit" name="confirmPasswordEdit">
+					<property name="echoMode">
+						<enum>QLineEdit::Password</enum>
+					</property>
+					<property name="placeholderText">
+						<string>Confirm Password</string>
+					</property>
+				</widget>
+			</item>
+
+			<item>
+				<layout class="QHBoxLayout">
+					<item>
+						<widget class="QPushButton" name="createBtn">
+							<property name="text">
+								<string>Create</string>
+							</property>
+						</widget>
+					</item>
+
+					<item>
+						<widget class="QPushButton" name="cancelBtn">
+							<property name="text">
+								<string>Cancel</string>
+							</property>
+						</widget>
+					</item>
+				</layout>
+			</item>
+
+		</layout>
+
+	</widget>
+
+</ui>
