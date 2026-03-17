@@ -1,0 +1,147 @@
+Update UserManager.h
+-----------------
+static bool deleteUser(const QString& username,
+                       const QString& password);
+
+Implement in UserManager.cpp
+---------------
+bool UserManager::deleteUser(const QString& username,
+                             const QString& password)
+{
+    if (!authenticate(username, password))
+        return false;
+
+    QSettings settings(ORGANIZATION, APPLICATION);
+
+    settings.remove("users/" + username);
+
+    // If current user deleted → clear session
+    if (currentUser() == username)
+        logout();
+
+    return true;
+}
+
+----------------------------------
+#pragma once
+
+#include <QDialog>
+
+namespace Ui {
+class DeleteAccountDialog;
+}
+
+class DeleteAccountDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit DeleteAccountDialog(QWidget* parent = nullptr);
+    ~DeleteAccountDialog();
+
+    QString password() const;
+
+private:
+    Ui::DeleteAccountDialog* ui;
+};
+
+--------------------
+
+#include "DeleteAccountDialog.h"
+#include "ui_DeleteAccountDialog.h"
+
+DeleteAccountDialog::DeleteAccountDialog(QWidget* parent)
+    : QDialog(parent),
+      ui(new Ui::DeleteAccountDialog)
+{
+    ui->setupUi(this);
+
+    connect(ui->deleteBtn, &QPushButton::clicked,
+            this, &QDialog::accept);
+
+    connect(ui->cancelBtn, &QPushButton::clicked,
+            this, &QDialog::reject);
+}
+
+DeleteAccountDialog::~DeleteAccountDialog()
+{
+    delete ui;
+}
+
+QString DeleteAccountDialog::password() const
+{
+    return ui->passwordEdit->text();
+}
+
+------------
+6. Update MainWindow.h
+
+Add:
+
+void deleteAccount();
+
+------------------
+connect(ui->actionDeleteAccount,
+        &QAction::triggered,
+        this,
+        &MainWindow::deleteAccount);
+-----------------------
+#include "DeleteAccountDialog.h"
+#include "LoginDialog.h"
+#include "SignupDialog.h"
+#include "../core/UserManager.h"
+
+void MainWindow::deleteAccount()
+{
+    QString user = UserManager::currentUser();
+
+    DeleteAccountDialog dialog(this);
+
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    QString password = dialog.password();
+
+    if (!UserManager::deleteUser(user, password))
+    {
+        QMessageBox::warning(this,
+            "Error",
+            "Incorrect password.");
+        return;
+    }
+
+    QMessageBox::information(this,
+        "Account Deleted",
+        "Your account has been deleted.");
+
+    ui->tabWidget->clear();
+
+    // Decide next step
+    if (UserManager::users().isEmpty())
+    {
+        SignupDialog signup;
+
+        if (signup.exec() != QDialog::Accepted)
+        {
+            close();
+            return;
+        }
+    }
+
+    LoginDialog login;
+
+    if (login.exec() != QDialog::Accepted)
+    {
+        close();
+        return;
+    }
+
+    // Reload preferences
+    QString newUser = UserManager::currentUser();
+
+    QFont font = SettingsManager::loadFontPreferences(newUser);
+    bool wrap = SettingsManager::loadWordWrap(newUser);
+
+    m_customToolbar->setFont(font);
+    ui->actionWordWrap->setChecked(wrap);
+}
