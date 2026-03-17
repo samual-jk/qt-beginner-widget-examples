@@ -1,0 +1,140 @@
+🔧 1. Fix SettingsManager (Per-User Recent Files)
+Update SettingsManager.h
+------------------------
+static QStringList loadRecentFiles(const QString& user);
+static void saveRecentFiles(const QString& user, const QStringList& files);
+------------------
+Update SettingsManager.cpp
+----------------
+QStringList SettingsManager::loadRecentFiles(const QString& user)
+{
+    QSettings settings(ORGANIZATION, APPLICATION);
+
+    settings.beginGroup("users/" + user + "/preferences");
+
+    QStringList files = settings.value("recentFiles").toStringList();
+
+    settings.endGroup();
+
+    return files;
+}
+
+void SettingsManager::saveRecentFiles(const QString& user, const QStringList& files)
+{
+    QSettings settings(ORGANIZATION, APPLICATION);
+
+    settings.beginGroup("users/" + user + "/preferences");
+
+    settings.setValue("recentFiles", files);
+
+    settings.endGroup();
+}
+
+-------------
+🔧 2. Update MainWindow (Use User-Specific Recent Files)
+Constructor
+-------------------
+QString user = UserManager::currentUser();
+
+m_recentFiles = SettingsManager::loadRecentFiles(user);
+updateRecentFileActions();
+---------------------
+Update addRecentFile()
+--------------------------
+void MainWindow::addRecentFile(const QString& path)
+{
+    QString user = UserManager::currentUser();
+
+    m_recentFiles.removeAll(path);
+    m_recentFiles.prepend(path);
+
+    while (m_recentFiles.size() > MaxRecentFiles)
+        m_recentFiles.removeLast();
+
+    SettingsManager::saveRecentFiles(user, m_recentFiles);
+
+    updateRecentFileActions();
+}
+
+---------------------------
+🔧 3. Save Last Opened File
+
+We’ll store last opened file (most recent).
+
+Add in SettingsManager
+Header
+-----------------------
+static QString loadLastOpenedFile(const QString& user);
+static void saveLastOpenedFile(const QString& user, const QString& path);
+-------------------
+Implementation
+--------------------
+QString SettingsManager::loadLastOpenedFile(const QString& user)
+{
+    QSettings settings(ORGANIZATION, APPLICATION);
+
+    settings.beginGroup("users/" + user + "/preferences");
+
+    QString path = settings.value("lastFile").toString();
+
+    settings.endGroup();
+
+    return path;
+}
+
+void SettingsManager::saveLastOpenedFile(const QString& user, const QString& path)
+{
+    QSettings settings(ORGANIZATION, APPLICATION);
+
+    settings.beginGroup("users/" + user + "/preferences");
+
+    settings.setValue("lastFile", path);
+
+    settings.endGroup();
+}
+---------------------
+🔧 4. Update File Open / Save
+In openFile()
+
+After success:
+===========================
+
+QString user = UserManager::currentUser();
+
+SettingsManager::saveLastOpenedFile(user, path);
+addRecentFile(path);
+
+--------------------
+In saveFileAs()
+QString user = UserManager::currentUser();
+
+SettingsManager::saveLastOpenedFile(user, path);
+addRecentFile(path);
+
+-------------------------------------------------
+🔧 5. Load Last File on Startup
+In MainWindow constructor
+
+After loading preferences:
+---------------------------------------------
+
+QString user = UserManager::currentUser();
+
+if (SettingsManager::loadOpenLastFile(user))
+{
+    QString lastFile = SettingsManager::loadLastOpenedFile(user);
+
+    if (!lastFile.isEmpty() && QFileInfo::exists(lastFile))
+    {
+        auto content = FileManager::readFile(lastFile);
+
+        if (content)
+        {
+            auto* editor = new EditorWidget(this);
+            editor->setText(*content);
+            editor->document()->setFilePath(lastFile);
+
+            addEditorTab(editor, QFileInfo(lastFile).fileName());
+        }
+    }
+}
