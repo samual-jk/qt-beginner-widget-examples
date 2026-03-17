@@ -86,11 +86,8 @@ void UserManager::setCurrentUser(const QString& username)
 QString UserManager::currentUser()
 {
     QSettings settings(ORGANIZATION, APPLICATION);
-
     settings.beginGroup(SESSION_GROUP);
-
     QString user = settings.value(CURRENT_USER).toString();
-
     settings.endGroup();
 
     return user;

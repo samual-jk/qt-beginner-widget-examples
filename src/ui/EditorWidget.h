@@ -19,6 +19,9 @@ public:
     void setText(const QString& text);
     QPlainTextEdit* editor() const;
 
+    void setEditorFont(const QFont& font);
+    void setWordWrap(bool enabled);
+
 signals:
     void modificationChanged(bool modified);
 

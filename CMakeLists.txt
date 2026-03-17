@@ -36,6 +36,9 @@ qt_add_executable(NotepadPro
     src/ui/LoginDialog.ui
     src/ui/LoginDialog.h
     src/ui/LoginDialog.cpp
+    src/ui/CustomToolbar.ui
+    src/ui/CustomToolbar.h
+    src/ui/CustomToolbar.cpp
 
     src/core/Document.h
     src/core/Document.cpp

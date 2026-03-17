@@ -43,3 +43,17 @@ QPlainTextEdit* EditorWidget::editor() const
 {
     return m_editor;
 }
+
+void EditorWidget::setEditorFont(const QFont& font)
+{
+    m_editor->setFont(font);
+}
+
+void EditorWidget::setWordWrap(bool enabled)
+{
+    m_editor->setLineWrapMode(
+        enabled
+        ? QPlainTextEdit::WidgetWidth
+        : QPlainTextEdit::NoWrap
+    );
+}

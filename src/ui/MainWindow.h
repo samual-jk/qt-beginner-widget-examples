@@ -8,6 +8,8 @@ class EditorWidget;
 class QAction;
 class QMenu;
 class FindReplaceDialog;
+class CustomToolbar;
+class QLabel;
 
 namespace Ui {
     class MainWindow;
@@ -29,6 +31,8 @@ private:
     QMenu* m_recentFilesMenu = nullptr;
     QVector<QAction*> m_recentFileActions;
     FindReplaceDialog* m_findDialog = nullptr;
+    CustomToolbar* m_customToolbar = nullptr;
+    QLabel* m_userLabel;
 
 private:
     void setupMenus();
@@ -52,6 +56,10 @@ private:
     void findPrevious(const QString& text);
     void replaceOne(const QString& find, const QString& replace);
     void replaceAll(const QString& find, const QString& replace);
+
+private slots:
+    void logoutUser();
+    void addAccount();
 
 protected:
     void closeEvent(QCloseEvent* event) override;

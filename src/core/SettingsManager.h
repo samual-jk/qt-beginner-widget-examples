@@ -1,14 +1,19 @@
 #pragma once
-#include <QStringList>
 
-class QMainWindow;
+#include <QString>
+#include <QStringList>
+#include <QFont>
 
 class SettingsManager
 {
 public:
-    static void saveWindowState(QMainWindow* window);
-    static void restoreWindowState(QMainWindow* window);
 
-    static void saveRecentFiles(const QStringList& files);
     static QStringList loadRecentFiles();
+    static void saveRecentFiles(const QStringList& files);
+
+    static QFont loadFontPreferences(const QString& user);
+    static void saveFontPreferences(const QString& user, const QFont& font);
+
+    static bool loadWordWrap(const QString& user);
+    static void saveWordWrap(const QString& user, bool enabled);
 };

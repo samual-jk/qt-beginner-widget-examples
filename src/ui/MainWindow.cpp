@@ -3,10 +3,13 @@
 
 #include "../core/FileManager.h"
 #include "../core/Document.h"
+#include "../core/SettingsManager.h"
+#include "../core/UserManager.h"
 #include "EditorWidget.h"
 #include "FindReplaceDialog.h"
-#include "../core/SettingsManager.h"
-
+#include "CustomToolbar.h"
+#include "LoginDialog.h"
+#include "SignupDialog.h"
 
 #include <QPlainTextEdit>
 #include <QTextDocument>
@@ -16,6 +19,7 @@
 #include <QCloseEvent>
 #include <QStringList>
 #include <QVector>
+#include <QLabel>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
@@ -24,10 +28,38 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
 
     setupMenus();
-
+    setupUi();
     m_recentFiles = SettingsManager::loadRecentFiles();
 
     updateRecentFileActions();
+
+    m_customToolbar = new CustomToolbar(this);
+    ui->toolBar->addWidget(m_customToolbar);
+
+    QString user = UserManager::currentUser();
+
+    QFont font = SettingsManager::loadFontPreferences(user);
+    bool wrap = SettingsManager::loadWordWrap(user);
+
+    m_customToolbar->setFont(font);
+    ui->actionWordWrap->setChecked(wrap);
+
+    m_userLabel = new QLabel(this);
+    statusBar()->addPermanentWidget(m_userLabel);
+
+    m_userLabel->setText(
+        "User: " + user);
+
+    connect(m_customToolbar,
+        &CustomToolbar::fontChanged,
+        this,
+        [this](const QFont& font)
+        {
+            auto* editor = currentEditor();
+            if (!editor) return;
+
+            editor->setEditorFont(font);
+        });
 
     connect(ui->tabWidget,
         &QTabWidget::tabCloseRequested,
@@ -46,6 +78,49 @@ MainWindow::MainWindow(QWidget* parent)
             ui->tabWidget->removeTab(index);
             editor->deleteLater();
         });
+
+    connect(ui->tabWidget,
+        &QTabWidget::currentChanged,
+        this,
+        [this](int)
+        {
+            auto* editor = currentEditor();
+            if (!editor) return;
+
+            m_customToolbar->setFont(
+                editor->editor()->font());
+        });
+
+    connect(m_customToolbar,
+        &CustomToolbar::fontChanged,
+        this,
+        [this](const QFont& font)
+        {
+            auto* editor = currentEditor();
+            if (!editor) return;
+
+            editor->setEditorFont(font);
+
+            QString user = UserManager::currentUser();
+
+            SettingsManager::saveFontPreferences(user, font);
+        });
+
+    connect(ui->actionWordWrap,
+        &QAction::toggled,
+        this,
+        [this](bool enabled)
+        {
+            auto* editor = currentEditor();
+            if (!editor) return;
+
+            editor->setWordWrap(enabled);
+
+            QString user = UserManager::currentUser();
+
+            SettingsManager::saveWordWrap(user, enabled);
+        });
+
 }
 
 MainWindow::~MainWindow()
@@ -69,6 +144,16 @@ void MainWindow::setupMenus()
 
     connect(ui->actionExit, &QAction::triggered,
         this, &MainWindow::close);
+
+    connect(ui->actionLogout,
+        &QAction::triggered,
+        this,
+        &MainWindow::logoutUser);
+
+    connect(ui->actionAddAccount,
+        &QAction::triggered,
+        this,
+        &MainWindow::addAccount);
 
     connect(ui->actionFindReplace,
         &QAction::triggered,
@@ -223,6 +308,13 @@ void MainWindow::saveFileAs()
 
 void MainWindow::addEditorTab(EditorWidget* editor, const QString& title)
 {
+    QString user = UserManager::currentUser();
+    QFont font = SettingsManager::loadFontPreferences(user);
+    bool wrap = SettingsManager::loadWordWrap(user);
+
+    editor->setEditorFont(font);
+    editor->setWordWrap(wrap);
+
     ui->tabWidget->addTab(editor, title);
     ui->tabWidget->setCurrentWidget(editor);
 
@@ -416,4 +508,54 @@ void MainWindow::openRecentFile()
     editor->document()->setFilePath(path);
 
     addEditorTab(editor, QFileInfo(path).fileName());
+}
+
+void MainWindow::logoutUser()
+{
+    if (QMessageBox::question(this,
+        "Logout",
+        "Do you want to logout?")
+        != QMessageBox::Yes)
+        return;
+
+    UserManager::logout();
+
+    LoginDialog login(this);
+
+    if (login.exec() != QDialog::Accepted)
+    {
+        close();
+        return;
+    }
+
+    QString user = UserManager::currentUser();
+
+    // reload preferences
+    QFont font = SettingsManager::loadFontPreferences(user);
+    bool wrap = SettingsManager::loadWordWrap(user);
+
+    m_customToolbar->setFont(font);
+    ui->actionWordWrap->setChecked(wrap);
+
+    // apply settings to open editors
+    for (int i = 0; i < ui->tabWidget->count(); ++i)
+    {
+        auto* editor =
+            qobject_cast<EditorWidget*>(ui->tabWidget->widget(i));
+
+        if (!editor) continue;
+
+        editor->setEditorFont(font);
+        editor->setWordWrap(wrap);
+    }
+}
+
+void MainWindow::addAccount()
+{
+    SignupDialog dialog(this);
+
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    logoutUser();
 }
