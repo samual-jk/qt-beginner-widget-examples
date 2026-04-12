@@ -1,7 +1,7 @@
 ## **Title**
 
 **Security Risk: OpenSSL Configuration & Module Injection via Environment Variables**
-
+https://medium.com/@ishanchowdhury2018/dll-hijacking-analysis-using-process-monitor-6e6d60c0ab6b
 ---
 
 ## **Current Behaviour**
